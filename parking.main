@@ -1,0 +1,92 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+public class ParkingSystemGUI {
+    private int totalSlots;
+    private int availableSlots;
+    private ArrayList<String> parkedCars;
+
+    private JFrame frame;
+    private JLabel slotsLabel;
+    private JLabel availableSlotsLabel;
+    private JTextArea parkedCarsTextArea;
+    private JTextField licensePlateTextField;
+
+    public ParkingSystemGUI(int totalSlots) {
+        this.totalSlots = totalSlots;
+        this.availableSlots = totalSlots;
+        this.parkedCars = new ArrayList<>();
+
+        frame = new JFrame("Parking System");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+        frame.setLayout(new GridLayout(5, 1));
+
+        slotsLabel = new JLabel("Total Parking Slots: " + totalSlots);
+        availableSlotsLabel = new JLabel("Available Slots: " + availableSlots);
+
+        parkedCarsTextArea = new JTextArea();
+        parkedCarsTextArea.setEditable(false);
+
+        licensePlateTextField = new JTextField();
+        JButton parkButton = new JButton("Park Car");
+        JButton removeButton = new JButton("Remove Car");
+
+        frame.add(slotsLabel);
+        frame.add(availableSlotsLabel);
+        frame.add(parkedCarsTextArea);
+        frame.add(licensePlateTextField);
+        frame.add(parkButton);
+        frame.add(removeButton);
+
+        parkButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                parkCar();
+            }
+        });
+
+        removeButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                removeCar();
+            }
+        });
+
+        updateUI();
+        frame.setVisible(true);
+    }
+
+    private void parkCar() {
+        String licensePlate = licensePlateTextField.getText().trim();
+        if (availableSlots > 0 && !licensePlate.isEmpty()) {
+            parkedCars.add(licensePlate);
+            availableSlots--;
+            licensePlateTextField.setText("");
+            updateUI();
+        }
+    }
+
+    private void removeCar() {
+        String licensePlate = licensePlateTextField.getText().trim();
+        if (parkedCars.contains(licensePlate)) {
+            parkedCars.remove(licensePlate);
+            availableSlots++;
+            licensePlateTextField.setText("");
+            updateUI();
+        }
+    }
+
+    private void updateUI() {
+        availableSlotsLabel.setText("Available Slots: " + availableSlots);
+        parkedCarsTextArea.setText("Parked Cars:\n" + String.join("\n", parkedCars));
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            int totalSlots = Integer.parseInt(JOptionPane.showInputDialog("Enter the total number of parking slots:"));
+            new ParkingSystemGUI(totalSlots);
+        });
+    }
+}
